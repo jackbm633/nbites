@@ -20,6 +20,7 @@ SET( VISION_SRCS
   RobotObstacle.cpp
   Ransac.cpp
   VisionCalibration.cpp
+  NNetDetector.cc
   )
 
 IF (UNIX AND NOT APPLE)

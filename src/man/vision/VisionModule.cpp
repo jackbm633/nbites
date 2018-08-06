@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <deque>
 
 #include "Profiler.h"
 #include "DebugConfig.h"
@@ -59,6 +60,7 @@ VisionModule::VisionModule(int wd, int ht, std::string robotName)
     //      removed in C++11.
     for (int i = 0; i < 2; i++) {
 //        getColorsFromLisp(colors, i);
+        std::cout << "Beginning initialisation" << std::endl;
 
         frontEnd[i] = new ImageFrontEnd();
         edgeDetector[i] = new EdgeDetector();
@@ -95,6 +97,8 @@ VisionModule::VisionModule(int wd, int ht, std::string robotName)
         ballDetector[i] = new BallDetector(homography[i], field, i == 0);
         boxDetector[i] = new GoalboxDetector();
         centerCircleDetector[i] = new CenterCircleDetector();
+        nNetDetector[i] = new NNetDetector(0.25);
+        nNetDetector[i]->initialise();
 
         if (i == 0) {
           hough[i] = new HoughSpace(wd / 2, ht / 2);
@@ -108,19 +112,22 @@ VisionModule::VisionModule(int wd, int ht, std::string robotName)
         frontEnd[i]->fast(fast);
         edgeDetector[i]->fast(fast);
         hough[i]->fast(fast);
+
+       
 #ifdef OFFLINE
-		ballDetector[i]->setDebugImage(debugImage[i]);
+        ballDetector[i]->setDebugImage(debugImage[i]);
 #endif
     }
 #ifdef OFFLINE
-	// Here is an example of how to get access to the debug space. In this case the
-	// field class only runs on the top image so it only needs that one
-	field->setDebugImage(debugImage[0]);
+    // Here is an example of how to get access to the debug space. In this case the
+    // field class only runs on the top image so it only needs that one
+    field->setDebugImage(debugImage[0]);
 #endif
 
     // Retreive calibration params for the robot name specified in the constructor
     robotImageObstacle = new RobotObstacle(wd / 4, ht / 4);
 }
+
 
 VisionModule::~VisionModule()
 {
@@ -136,14 +143,14 @@ VisionModule::~VisionModule()
         delete kinematics[i];
         delete homography[i];
         delete fieldLines[i];
-		delete debugImage[i];
-		//delete debugSpace[i];
+        delete debugImage[i];
+        //delete debugSpace[i];
         delete boxDetector[i];
         delete cornerDetector[i];
         delete centerCircleDetector[i];
         delete ballDetector[i];
+        delete nNetDetector[i];
     }
-	delete field;
 }
 
     int overrun = 0;
@@ -156,6 +163,7 @@ void VisionModule::run_()
     bottomIn.latch();
     jointsIn.latch();
     inertsIn.latch();
+    printf("143\n");
 
 #ifndef OFFLINE
 
@@ -178,8 +186,8 @@ void VisionModule::run_()
     bool ballDetected = false;
 
     // Time vision module
-    double topTimes[12];
-    double bottomTimes[12];
+    double topTimes[20];
+    double bottomTimes[120];
     double* times[2] = { topTimes, bottomTimes };
 
     // Loop over top and bottom image and run line detection system
@@ -187,6 +195,8 @@ void VisionModule::run_()
         PROF_ENTER2(P_VISION_TOP, P_VISION_BOT, i==0)
         // Get image
         const messages::YUVImage* image = images[i];
+        std::deque<std::vector<unsigned char>> im = image->get_rgb_image();
+        
 
         // Construct YuvLite object for use in vision system
         YuvLite yuvLite(image->width() / 4,
@@ -211,11 +221,13 @@ void VisionModule::run_()
 #ifdef OFFLINE
         uint8_t* fakeColorTableBytes = new uint8_t[1<<21];
 #endif
+        printf("206\n");
 
         // Run front end
         PROF_ENTER2(P_FRONT_TOP, P_FRONT_BOT, i==0)
 #ifdef OFFLINE
         frontEnd[i]->run(yuvLite, colorParams[i], fakeColorTableBytes);
+       delete[] fakeColorTableBytes;
 #else
         frontEnd[i]->run(yuvLite, colorParams[i]);
 #endif
@@ -227,9 +239,7 @@ void VisionModule::run_()
 
 /* Delete these fake bytes after we've run the front end so that we
  * don't have a memory leak. */
-#ifdef OFFLINE
-        delete[] fakeColorTableBytes;
-#endif
+
 
         times[i][0] = timer.end();
 
@@ -340,6 +350,11 @@ void VisionModule::run_()
                                                   kinematics[i]->wz0(), *(edges[i]));
         PROF_EXIT2(P_BALL_TOP, P_BALL_BOT, i==0)
         times[i][11] = timer.end();
+
+        PROF_ENTER2(P_NNET_TOP, P_NNET_BOT, i==0)
+        nNetDetector[i]->detect(im, image->height(), image->width());
+        PROF_EXIT2(P_NNET_TOP, P_NNET_BOT, i==0)
+        times[i][12] = timer.end();
 
         PROF_EXIT2(P_VISION_TOP, P_VISION_BOT, i==0)
 #ifdef USE_LOGGING
@@ -582,6 +597,7 @@ void VisionModule::setColorParams(Colors* colors, bool topCamera)
 
     if (colorParams[!topCamera]) delete colorParams[!topCamera];
     colorParams[!topCamera] = colors;
+
 }
 
 void VisionModule::reloadCameraOffsets() {

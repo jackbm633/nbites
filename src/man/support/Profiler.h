@@ -42,6 +42,7 @@ enum ProfiledComponent {
     P_LINES_TOP,
     P_LINECLASS_TOP,
     P_BALL_TOP,
+    P_NNET_TOP,
     P_VISION_BOT,
     P_FRONT_BOT,
     P_GRAD_BOT,
@@ -53,6 +54,7 @@ enum ProfiledComponent {
     P_LINES_BOT,
     P_LINECLASS_BOT,
     P_BALL_BOT,
+    P_NNET_BOT,
     P_OBSTACLE,
 
     P_SELF_LOC,

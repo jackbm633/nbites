@@ -67,8 +67,11 @@ include_directories( ${CMAKE_SOURCE_DIR} )
 find_package( PROTOBUF REQUIRED )
 include_directories( SYSTEM ${PROTOBUF_INCLUDE_DIR} )
 
+find_package(OpenCV REQUIRED)
+
 # Our core includes come from here
 include_directories( ${SHARE_DIR}/include )
+include_directories(${MAN_DIR}/darknet)
 
 # Compile portals into portals folder
 add_subdirectory( ${SHARE_DIR}/portals ${CMAKE_CURRENT_BINARY_DIR}/portals )
@@ -99,7 +102,9 @@ add_subdirectory( ${MAN_DIR}/balltrack ${CMAKE_CURRENT_BINARY_DIR}/man/balltrack
 add_subdirectory( ${MAN_DIR}/comm ${CMAKE_CURRENT_BINARY_DIR}/man/comm)
 add_subdirectory( ${MAN_DIR}/sharedball ${CMAKE_CURRENT_BINARY_DIR}/man/sharedball)
 add_subdirectory( ${MAN_DIR}/localization ${CMAKE_CURRENT_BINARY_DIR}/man/localization)
-
+#include(${MAN_DIR}/thirdparty/darknet.cmake)
+#include_directories(${MAN_DIR}/thirdparty/darknet)
+#add_subdirectory( ${MAN_DIR}/thirdparty ${CMAKE_CURRENT_BINARY_DIR}/man/thirdparty)
 ## SOURCES ##
 set( NBCROSS_SRCS
   nbcross.cpp
@@ -133,3 +138,12 @@ target_link_libraries( nbcross_tool
   logging
   logshare
   )
+
+add_library(darknet_lib SHARED IMPORTED)
+# A little bit of a hack, but will do for now.
+set_target_properties(darknet_lib PROPERTIES IMPORTED_LOCATION /home/jack/nbites/build/man/darknet/src/darknet/darknet.so)
+
+target_link_libraries(nbcross_tool darknet_lib)
+add_dependencies(nbcross_tool darknet_lib)
+
+target_link_libraries(nbcross_tool ${OpenCV_LIBS})

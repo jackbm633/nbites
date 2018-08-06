@@ -12,6 +12,7 @@
 #include "Kinematics.h"
 #include "Homography.h"
 #include "Field.h"
+#include "NNetDetector.h"
 
 #include "BallDetector.h"
 #include "RobotObstacle.h"
@@ -53,6 +54,9 @@ public:
     GoalboxDetector* getBox(bool topCamera = true) const { return boxDetector[!topCamera]; }
     CornerDetector* getCorners(bool topCamera = true) const { return cornerDetector[!topCamera]; }
     CenterCircleDetector* getCCD(bool topCamera = true) const {return centerCircleDetector[!topCamera]; }
+    NNetDetector* getDetections(bool topCamera = true) const {
+        return nNetDetector[!topCamera];
+    }
 
 #ifdef OFFLINE
 	void setDebugDrawingParameters(nbl::SExpr* debugParams);
@@ -99,6 +103,7 @@ private:
     CornerDetector* cornerDetector[2];
     CenterCircleDetector* centerCircleDetector[2];
     BallDetector* ballDetector[2];
+    NNetDetector* nNetDetector[2];
 
     bool blackStar_;
 

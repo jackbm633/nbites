@@ -9,6 +9,8 @@
 #include <assert.h>
 #include <string>
 #include <inttypes.h>
+#include <vector>
+#include <deque>
 
 // A primary challenge in designing image classes is that the need to support very efficient
 // pixel operations is at odds with a desire to have an elegant, modular, polymorphic set of
@@ -390,15 +392,7 @@ protected:
   virtual ~MemoryImageBase();
   // effect   Destroy this image
 
-  void* makeMeOnHeap(int wd, int ht, int pixelSize);
-  // returns  Address of first pixel, for derived class use
-  // effect   Make me a new memory image of specified size on the heap, releasing any currently shared
-  //          pixels.
-  // notes    After this call, this image is the only one currently sharing the pixels.
-  //          rowPitch is guaranteed to be a multiple of 8 bytes. So if the pixel size is 2
-  //          bytes, rowPitch is a multiple of 4. Maintaining the quadword alignment of pixels in
-  //          a column can sometimes be used to enhance efficiency.
-  //          pixelPitch will be 1.
+  
 
   void* makeMeInMemory(void* pixels, int wd, int ht, int rowPitch, int pixelPitch = 1);
   // returns  Address of first pixel, for derived class use
@@ -429,6 +423,17 @@ public:
   int rowPitch  () const { return rowPitch_  ;}
   int pixelPitch() const { return pixelPitch_;}
   // returns  The pitch values.
+
+
+  void* makeMeOnHeap(int wd, int ht, int pixelSize);
+  // returns  Address of first pixel, for derived class use
+  // effect   Make me a new memory image of specified size on the heap, releasing any currently shared
+  //          pixels.
+  // notes    After this call, this image is the only one currently sharing the pixels.
+  //          rowPitch is guaranteed to be a multiple of 8 bytes. So if the pixel size is 2
+  //          bytes, rowPitch is a multiple of 4. Maintaining the quadword alignment of pixels in
+  //          a column can sometimes be used to enhance efficiency.
+  //          pixelPitch will be 1.
 };
 
 // ******************
@@ -772,6 +777,8 @@ public:
       this->MemoryImage::operator=(other);
       return *this;
   }
+
+  std::deque<std::vector<unsigned char>> get_rgb_image() const;
 };
 
 // ***********************

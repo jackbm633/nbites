@@ -105,6 +105,7 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
     module.jointsIn.setMessage(jointsMessage);
 
     module.blackStar(false);
+    std::cout << "Beginning running 108" << std::endl;
 
     if (theLog->topLevelDictionary.find("OriginalCameraOffsets") !=
         theLog->topLevelDictionary.end() ) {
@@ -112,6 +113,7 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
         json::Object& offsets = theLog->topLevelDictionary["OriginalCameraOffsets"].asObject();
         module.setCalibrationParams(man::vision::calibration::parseOffsetsFromJSON(offsets), topCamera);
     }
+    std::cout << "Beginning running 116" << std::endl;
 
     if (theLog->topLevelDictionary.find("ModifiedCameraOffsets") !=
         theLog->topLevelDictionary.end()) {
@@ -120,12 +122,14 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
         module.setCalibrationParams(man::vision::calibration::parseOffsetsFromJSON(offsets), topCamera);
     }
 
-    if (theLog->topLevelDictionary.find("OriginalColorParams") !=
-        theLog->topLevelDictionary.end()) {
-        NBL_INFO("using OriginalColorParams");
-        json::Object& offsets = theLog->topLevelDictionary["OriginalColorParams"].asObject();
-        module.setColorParams(man::vision::calibration::parseColorsFromJSON(offsets), topCamera);
-    }
+    // if (theLog->topLevelDictionary.find("OriginalColorParams") !=
+    //     theLog->topLevelDictionary.end()) {
+    //     NBL_INFO("using OriginalColorParams");
+    //     json::Object& offsets = theLog->topLevelDictionary["OriginalColorParams"].asObject();
+    //     std::cout << "Beginning running 129" << std::endl;
+    //     module.setColorParams(man::vision::calibration::parseColorsFromJSON(offsets), topCamera);
+    // }
+    std::cout << "Beginning running 131" << std::endl;
 
     if (theLog->topLevelDictionary.find("ModifiedColorParams") !=
         theLog->topLevelDictionary.end()) {
@@ -137,6 +141,7 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
         NBL_INFO("ModifiedColorParams object parsed");
     }
 
+std::cout << "Beginning running 140" << std::endl;
     if (theLog->blocks.size() > 3 && theLog->blocks[2].type == SharedConstants::SexprType_DEFAULT()) {
         NBL_WARN("using camera offsets parameters in LISP FORM (v8.0)");
         SExpr _calParams = theLog->blocks[3].parseAsSexpr();
@@ -154,6 +159,8 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
         }
     }
 
+    std::cout << "Beginning running 157" << std::endl;
+
     if (theLog->topLevelDictionary.find("DebugDrawing") !=
             theLog->topLevelDictionary.end()) {
         std::string ser = theLog->topLevelDictionary["DebugDrawing"].asString();
@@ -163,8 +170,11 @@ NBCROSS_FUNCTION(Vision, false, nbl::SharedConstants::LogClass_Tripoint())
         delete deser;
     }
 
+    std::cout << "Beginning running module" << std::endl;
+
     // Run it!
     module.run();
+    std::cout << "Finished running module" << std::endl;
 
     std::vector<Block> retVec;
     // -----------

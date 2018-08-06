@@ -30,6 +30,7 @@ static const char *PCOMPONENT_NAMES[] = {
     "Lines top",
     "Line Classification top",
     "Ball top",
+    "Neural network top",
     "Vision bot",
     "Front end bot",
     "Gradient bot",
@@ -41,6 +42,7 @@ static const char *PCOMPONENT_NAMES[] = {
     "Lines bot",
     "Line Classification bot",
     "Ball bot",
+    "Neural network bot",
     "Obstacle",
 
     "Localization",
@@ -109,6 +111,7 @@ static const ProfiledComponent PCOMPONENT_SUB_ORDER[] = {
     /*P_LINES_TOP              --> */ P_VISION_TOP,
     /*P_LINECLASS_TOP          --> */ P_VISION_TOP,
     /*P_BALL_TOP               --> */ P_VISION_TOP,
+    /*P_NNET_TOP               --> */ P_VISION_TOP,
     /*P_VISION_BOT             --> */ P_VISION,
     /*P_FRONT_BOT              --> */ P_VISION_BOT,
     /*P_GRAD_BOT               --> */ P_VISION_BOT,
@@ -120,6 +123,7 @@ static const ProfiledComponent PCOMPONENT_SUB_ORDER[] = {
     /*P_LINES_BOT              --> */ P_VISION_BOT,
     /*P_LINECLASS_BOT          --> */ P_VISION_BOT,
     /*P_BALL_BOT               --> */ P_VISION_BOT,
+    /*P_NNET_BOT               --> */ P_VISION_BOT,
     /*P_OBSTACLE               --> */ P_VISION,
 
     /*P_SELF_LOC               --> */ P_COGNITION_THREAD,

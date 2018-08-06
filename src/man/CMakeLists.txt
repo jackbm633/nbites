@@ -62,6 +62,10 @@ include_directories( ${ALCOMMON_INCLUDE_DIR} )
 find_package( PROTOBUF REQUIRED )
 include_directories( SYSTEM ${PROTOBUF_INCLUDE_DIR} )
 
+find_package( OpenCV REQUIRED core imgproc )
+
+#find_package(tbb REQUIRED)
+
 # For Python
 find_package( PythonLibs REQUIRED)
 include_directories( ${PYTHON_INCLUDE_DIR} )
@@ -95,6 +99,10 @@ if( BUILD_PROTOBUF )
 add_dependencies(messages protobuf_libs)
 endif()
 
+# Darknet
+#include_directories(darknet)
+
+
 # Actual subdirectories
 include_directories( support )
 add_subdirectory( support )
@@ -121,6 +129,10 @@ add_subdirectory( sensors )
 add_subdirectory( sharedball )
 add_subdirectory( naiveball )
 add_subdirectory( vision )
+
+#Include the Darknet library
+#include(thirdparty/darknet.cmake)
+#add_subdirectory(thirdparty)
 
 set( MAN_SRCS main.cpp
   Man.cpp
@@ -162,6 +174,23 @@ target_link_libraries(
   vision
 )
 
+add_library(darknet_lib SHARED IMPORTED)
+# A little bit of a hack, but will do for now.
+set_target_properties(darknet_lib PROPERTIES IMPORTED_LOCATION /home/jack/nbites/build/man/darknet/src/darknet/darknet.so)
+
+target_link_libraries(man darknet_lib)
+add_dependencies(man darknet_lib)
+
+add_library(tbb SHARED IMPORTED)
+set_target_properties(tbb PROPERTIES IMPORTED_LOCATION /home/jack/nbites/lib/atomtoolchain/tbb/lib/libtbb.so)
+add_library(zlib SHARED IMPORTED)
+set_target_properties(zlib PROPERTIES IMPORTED_LOCATION /home/jack/nbites/lib/atomtoolchain/zlib/lib/libz.so)
+
+target_link_libraries(man ${OpenCV_LIBS})
+target_link_libraries(man tbb)
+target_link_libraries(man zlib)
+
+
 install( TARGETS man
   RUNTIME DESTINATION lib
 )
@@ -180,6 +209,8 @@ install ( FILES ${loggingFiles} DESTINATION ${CMAKE_INSTALL_PREFIX}/Config )
 file ( GLOB unswPositionFiles "motion/unswalk/pos/*" )
 
 install ( FILES ${unswPositionFiles} DESTINATION ${CMAKE_INSTALL_PREFIX}/Config/pos )
+
+
 
 
 

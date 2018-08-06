@@ -678,6 +678,7 @@ void TranscriberModule::run_()
                          &inertsIn.message()));
 
     messages::YUVImage image = it.getNextImage();
+    //unsigned char* test = image.get_rgb_image();
     portals::Message<messages::YUVImage> imageOutMessage(&image);
     imageOut.setMessage(imageOutMessage);
 
