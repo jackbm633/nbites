@@ -1,0 +1,38 @@
+make -C ../../build/man --no-print-directory
+[  4%] Built target protobuf_libs
+[ 37%] Built target messages
+[ 38%] Built target portals
+[ 41%] Built target logshare
+[ 43%] Built target logging
+[ 49%] Built target support
+[ 61%] Built target vision
+[ 61%] Built target arms
+[ 62%] Built target audio
+[ 63%] Built target balltrack
+[ 66%] Built target comm
+[ 67%] Built target gamestate
+[ 70%] Built target behaviors
+[ 71%] Built target guardian
+[ 72%] Built target image
+[ 72%] Built target jointenactor
+[ 76%] Built target localization
+[ 77%] Built target logmodule
+[ 89%] Built target unswalk
+[ 95%] Built target motion
+[ 95%] Built target obstacle
+[ 96%] Built target sensors
+[ 97%] Built target sharedball
+[ 98%] Built target naiveball
+Linking CXX executable man
+CMakeFiles/man.dir/Man.cpp.o: In function `man::Man::~Man()':
+Man.cpp:(.text+0x64f7): undefined reference to `man::vision::VisionModule::~VisionModule()'
+Man.cpp:(.text+0x6d83): undefined reference to `man::vision::VisionModule::~VisionModule()'
+CMakeFiles/man.dir/Man.cpp.o: In function `man::Man::Man()':
+Man.cpp:(.text+0x8179): undefined reference to `man::vision::VisionModule::~VisionModule()'
+vision/libvision.a(VisionModule.cpp.o): In function `man::vision::VisionModule::VisionModule(int, int, std::basic_string<char, std::char_traits<char>, std::allocator<char> >)':
+VisionModule.cpp:(.text+0x2d79): undefined reference to `vtable for man::vision::VisionModule'
+collect2: ld returned 1 exit status
+make[3]: *** [man] Error 1
+make[2]: *** [CMakeFiles/man.dir/all] Error 2
+make[1]: *** [all] Error 2
+make: *** [build] Error 2

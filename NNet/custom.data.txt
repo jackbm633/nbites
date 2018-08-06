@@ -1,0 +1,6 @@
+classes= 5
+train  = /mnt/research/robocup/jbeckitt-summer18/ml_dataset/list.txt
+#valid  = coco_testdev
+valid = /mnt/research/robocup/jbeckitt-summer18/ml_dataset/valid.txt
+names = custom.names
+backup = /mnt/research/robocup/jbeckitt-summer18/bak
